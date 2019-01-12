@@ -8,6 +8,7 @@ import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -461,6 +462,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         textcalories.setText(calories + "");
     }
 
+    // add the day_night shift menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_daynight_button,menu);
+        return true;
+    }
 
 
 }

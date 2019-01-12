@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#2c823a</color>
     <color name="colorPrimaryDark">#00540f</color>
-    <color name="colorAccent">#c5e1a5</color>
+    <color name="colorAccent">#c5e1a5</color>  <!-- the color of the drawn polyline-->
     <color name="data">#050505</color>
     <color name="text">#7e797b</color>
+    <color name="s_light">#f8ffd7</color>
 </resources>
