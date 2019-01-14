@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+
+    <!-- No title full screen theme for splash. -->
+    <style name="NoTitleFullscreen" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/splash_1xxhdpi</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <!--item name="android:windowTranslucentNavigation">true</item-->
+    </style>
 </resources>
