@@ -49,10 +49,30 @@ import com.google.android.gms.location.places.Places;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import android.arch.persistence.room.Room;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Calendar;
+
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -69,7 +89,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView textlength = null;
     private TextView textpace = null;
     private TextView textcalories = null;
-
     private Timer mTimer = null;
     private TimerTask mTimerTask = null;
     private Handler mHandler = null;
@@ -79,7 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static double sum = 0;
     private static double latitude = 0;
     private static double longitude = 0;
-    private static int v=0;
+    private static int v = 0;
     private static int calories = 0;
 
     private boolean isPause = false;
@@ -99,6 +118,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     List<Double> latList = new ArrayList<Double>();
     List<Double> lonList = new ArrayList<Double>();
 
+    private Location previousLocation = null;
+    private ArrayList<Polyline> runningRoute = new ArrayList<Polyline>();
+    private ArrayList<Location> points = new ArrayList<Location>();
+
+    // control the drawing status. default is not drawing
+    private boolean isDraw = false;
+
+    String DB_NAME = "running_db.sqlite";
+    RunningDAO runningdao;
+
+    private String startTime = null;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -116,6 +146,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btstart.setOnClickListener(listener);
         btstop.setOnClickListener(listener);
         btstop.setEnabled(false);
+
+       // connecting running database
+        final File dbFile = this.getDatabasePath(DB_NAME);
+        if (!dbFile.exists()) {
+            try {
+                copyDatabaseFile(dbFile.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // query data from database
+        queryDataFromDatabase();// query function
+
 
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -138,7 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mFusedLocationClient = getFusedLocationProviderClient(this);
         mLocationRequest = new LocationRequest();
         //set the interval for active location update to 0.3 second
-        mLocationRequest.setInterval(1000);
+        mLocationRequest.setInterval(300);
         // the fast interval request is 0.1 second
         mLocationRequest.setFastestInterval(100);
         // request High accuracy location based on the need of this app
@@ -153,6 +196,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+    // copy the database file into local from APK
+    private void copyDatabaseFile(String destinationPath) throws IOException {
+        InputStream assetsDB = this.getAssets().open(DB_NAME);
+        OutputStream dbOut = new FileOutputStream(destinationPath);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = assetsDB.read(buffer)) > 0) {
+            dbOut.write(buffer, 0, length);
+        }
+        dbOut.flush();
+        dbOut.close();
+    }
+
+    // query data function
+    // maybe we can display these old records somewhere later
+    public void queryDataFromDatabase() {
+        AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, DB_NAME).allowMainThreadQueries().build();
+        runningdao = database.getRunningdataDAO();
+        List<Runningdata> runningdata_list = runningdao.getAllRuningdata();
+        for (int i = 0; i < runningdata_list.size(); i++) {
+
+           String  oldStarttime = runningdata_list.get(i).getStarttime();
+           System.out.println("i:"+i+"oldStarttime:"+oldStarttime);
+
+        }
+    }
+
+    // insert records into local database
+    public void AddDataRecordtoDB(View view) {
+
+        //get the running distance from textview
+        TextView TV_distance = (TextView)findViewById(R.id.data_length);
+        Double runningDistance = Double.parseDouble(TV_distance.getText().toString());
+        System.out.println("distance is :"+runningDistance);
+
+        //get the calories from textview
+        TextView TV_calories = (TextView)findViewById(R.id.data_calories);
+        Double runningCalories = Double.parseDouble(TV_calories.getText().toString());
+        System.out.println("calorie is :"+runningCalories);
+
+        // new an running "entity"
+        Runningdata NewRunningdata = new Runningdata();
+        NewRunningdata.setDistance(runningDistance);
+        NewRunningdata.setCalorie(runningCalories);
+        NewRunningdata.setStarttime(startTime);
+
+        // using "dao" to manipulate database
+        runningdao.insert(NewRunningdata);
+         System.out.println("I did insertion");
+
+    }
+
+    public void UpdataDataRecordtoDB(View view) {
+
+    }
+
+    public void DelteDataRecordtoDB(View view) {
+
+    }
+
+
 
     @SuppressLint("NewApi")
     @Override
@@ -167,17 +271,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //the map style here should be changed later with 2 customized styles
         // one for day and one for night
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        // enable zoom button
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        // disenable zoom button because the zoom level is fixed.
+        mMap.getUiSettings().setZoomControlsEnabled(false);
         //enable positioning button
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // add markers
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)));
-
-
 
     }
-
 
 
     // This function handles the permission result
@@ -205,30 +304,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }, null);
     }
 
-    private Location previousLocation = null;
-    private ArrayList<Polyline> runningRoute = new ArrayList<Polyline>();
-    private ArrayList<Location> points = new ArrayList<Location>();
-
     public void onLocationChanged(Location location) {
         if (location != null) {
+            // zoom level 17 looks good in terms of running purpose
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17));
+            // drawing the route while the user is running
+            if (isDraw == true) {
+                // draw the route
+                routeDrawing(location);
+            }
+        }
+    }
 
-            if(previousLocation == null){
+    // drawing the polyline while running
+    private void routeDrawing(Location location) {
+
+            // validity check in case the first point does not have a previous point
+            if (previousLocation == null) {
+                // copy the current location to the previous point
                 previousLocation = location;
             }
-                 double lat = location.getLatitude();
-                 double lon = location.getLongitude();
+            double lat = location.getLatitude();
+            double lon = location.getLongitude();
 
-                 latitude = lat;
-                 longitude = lon;
-                 latList.add(latitude);
-                 lonList.add(longitude);
+            latitude = lat;
+            longitude = lon;
+            latList.add(latitude);
+            lonList.add(longitude);
 
                 // previous coordinates
-                System.out.println("previous Location: " + previousLocation.getLatitude() + " " + previousLocation.getLongitude());
+                //System.out.println("previous Location: " + previousLocation.getLatitude() + " " + previousLocation.getLongitude());
                 // current coordinates
-                System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
+                //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
 
-               // set the option of each part of polyline
+                // set the option of each part of polyline
                 PolylineOptions lineOptions = new PolylineOptions()
                         .add(new LatLng(previousLocation.getLatitude(), previousLocation.getLongitude()))
                         .add(new LatLng(location.getLatitude(), location.getLongitude()))
@@ -238,8 +347,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // add the polyline to the map
                 Polyline partOfRunningRoute = mMap.addPolyline(lineOptions);
-                // zoom level 17 looks good for running purpose
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom( new LatLng(location.getLatitude(),location.getLongitude()), 17));
                 // set the zindex so that the poly line stays on top of my tile overlays
                 partOfRunningRoute.setZIndex(1000);
                 // add the poly line to the array so they can all be removed if necessary
@@ -248,33 +355,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 points.add(location);
                 // store current location as previous location in the end
                 previousLocation = location;
-
-        }
     }
-
-
-    // This is the onclick function of start buttion
-    public void onClickStartRuning(View view) {
-
-
-    }
-
 
     /*chronometer*/
     private View.OnClickListener listener = new View.OnClickListener() {
         public void onClick(View v) {
             if (v == btstart) {
+                previousLocation = null;
+                // start drawing
+                isDraw = true;
                 startTimer();
                 btstart.setEnabled(false);
                 btstop.setEnabled(true);
                 textlength.setText("0.00");
                 textpace.setText("00'00''");
                 textcalories.setText("0");
+
+                //get the current time from device system and parse to String
+                startTime = Calendar.getInstance().getTime().toString();
+                System.out.println("Current time is: "+startTime);
+                //Tue Jan 15 13:12:49 GMT 2019
             }
             if (v == btstop) {
+                //stop drawing
+                isDraw = false;
                 stopTimer();
                 btstart.setEnabled(true);
                 btstop.setEnabled(false);
+
+                //insert new record into database
+                AddDataRecordtoDB(v);
             }
         }
     };
@@ -328,8 +438,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mHandler.sendMessage(message);
         }
     }
-    /*chronometer*/
 
+    /*chronometer*/
     /*time format changing*/
     public static String getTime(int second) {
         if (second < 10) {
@@ -390,18 +500,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         second = second - minute * 60;
         if (minute < 10) {
             if (second < 10) {
-                return "0" + minute + "'0" + second+ "''";
+                return "0" + minute + "'0" + second + "''";
             }
-            return "0" + minute + "'" + second+ "''";
+            return "0" + minute + "'" + second + "''";
         }
         if (second < 10) {
-            return minute + ":'0" + second+ "''";
+            return minute + ":'0" + second + "''";
         }
-        return minute + "'" + second+ "''";
+        return minute + "'" + second + "''";
     }
 
     /*time format changing*/
-
 
     /*test for distance's calculating*/
 
@@ -418,9 +527,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /*pace*/
-    public int getPace(double length, int t){
+    public int getPace(double length, int t) {
         int p = 0;
-        p = (int) (t/length);//s/km
+        p = (int) (t / length);//s/km
         return p;
     }
     /*pace*/
@@ -440,8 +549,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void updateTextView() {
         texttime.setText(getTime(count));
         for (int i = 1; i < latList.size(); i++) {
-            s = GetDistance(latList.get(i-1),
-                    lonList.get(i-1),
+            s = GetDistance(latList.get(i - 1),
+                    lonList.get(i - 1),
                     latList.get(i),
                     lonList.get(i));
 //            Location.distanceBetween(latList.get(i-1),
@@ -450,17 +559,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    lonList.get(i),results);
 //            s = results[0];
 
-
         }
         sum = sum + s;
-        String Sum = String .format("%.2f",sum);
+        String Sum = String.format("%.2f", sum);
         textlength.setText(Sum);
-        v = getPace(sum,count);
-        calories = getCalories(sum,count);
+        v = getPace(sum, count);
+        calories = getCalories(sum, count);
         textpace.setText(formatOfPace(v));
         textcalories.setText(calories + "");
     }
-
-
 
 }
