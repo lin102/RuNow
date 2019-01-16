@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="3">
+
         <TextView
             android:id="@+id/data_length"
             android:layout_width="match_parent"
@@ -34,7 +35,7 @@
             android:gravity="center"
             android:text="0.00"
             android:textColor="@color/data"
-            android:textSize="50dp"/>
+            android:textSize="50dp" />
         <TextView
             android:id="@+id/text_length"
             android:layout_width="match_parent"

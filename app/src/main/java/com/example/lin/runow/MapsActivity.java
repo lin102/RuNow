@@ -462,12 +462,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         textcalories.setText(calories + "");
     }
 
-    // add the day_night shift menu
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_daynight_button,menu);
-        return true;
-    }
-
 
 }
