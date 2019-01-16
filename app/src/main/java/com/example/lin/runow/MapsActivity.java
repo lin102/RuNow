@@ -83,8 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CameraPosition mCameraPosition;
 
 
-    private Button btstart = null;
-    private Button btstop = null;
+    private Button btleft = null;
+    private Button btright = null;
+    private Button btmiddle = null;
     private TextView texttime = null;
     private TextView textlength = null;
     private TextView textpace = null;
@@ -136,16 +137,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        btstart = (Button) findViewById(R.id.button_start);
-        btstop = (Button) findViewById(R.id.button_stop);
+        btleft = (Button) findViewById(R.id.button_left);
+        btright = (Button) findViewById(R.id.button_right);
+        btmiddle = (Button) findViewById(R.id.button_middle);
         texttime = (TextView) findViewById(R.id.data_time);
         textlength = (TextView) findViewById(R.id.data_length);
         textpace = (TextView) findViewById(R.id.data_pace);
         textcalories = (TextView) findViewById(R.id.data_calories);
 
-        btstart.setOnClickListener(listener);
-        btstop.setOnClickListener(listener);
-        btstop.setEnabled(false);
+        btleft.setOnClickListener(listener);
+        btmiddle.setOnClickListener(listener);
+        btright.setOnClickListener(listener);
+
+        btleft.setEnabled(true);
+        btright.setEnabled(false);
+        btmiddle.setEnabled(false);
 
        // connecting running database
         final File dbFile = this.getDatabasePath(DB_NAME);
@@ -360,31 +366,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*chronometer*/
     private View.OnClickListener listener = new View.OnClickListener() {
         public void onClick(View v) {
-            if (v == btstart) {
-                previousLocation = null;
-                // start drawing
-                isDraw = true;
+            if (v == btleft) {//start running
+                isStop = !isStop;
+                btleft.setEnabled(false);
+                btright.setEnabled(true);
+                btmiddle.setEnabled(true);
                 startTimer();
-                btstart.setEnabled(false);
-                btstop.setEnabled(true);
                 textlength.setText("0.00");
                 textpace.setText("00'00''");
                 textcalories.setText("0");
-
-                //get the current time from device system and parse to String
-                startTime = Calendar.getInstance().getTime().toString();
-                System.out.println("Current time is: "+startTime);
-                //Tue Jan 15 13:12:49 GMT 2019
+//                if(isPause){
+//                    isPause = !isPause;
+//                }
             }
-            if (v == btstop) {
-                //stop drawing
-                isDraw = false;
-                stopTimer();
-                btstart.setEnabled(true);
-                btstop.setEnabled(false);
 
-                //insert new record into database
-                AddDataRecordtoDB(v);
+            if (v == btmiddle) {
+                btleft.setEnabled(false);
+                btright.setEnabled(true);
+                btmiddle.setEnabled(true);
+                pauseTimer();
+                if (isPause) {//pause
+                    btmiddle.setText("RESUME");
+                }else{//resume
+                    btmiddle.setText("PAUSE");
+                }
+            }
+
+            if (v == btright){//stop
+                if (isPause){
+                    btmiddle.setText("PAUSE");
+                    isPause = !isPause;
+                }
+                stopTimer();
+                sum = 0;
+                btleft.setEnabled(true);
+                btmiddle.setEnabled(false);
+                btright.setEnabled(false);
+
+
             }
         }
     };
@@ -416,6 +435,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mTimer != null && mTimerTask != null)
             mTimer.schedule(mTimerTask, delay, period);
 
+    }
+
+    private void pauseTimer(){
+        isPause = !isPause;
     }
 
     private void stopTimer() {
@@ -537,10 +560,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*calories*/
     public int getCalories(double length, int t) {
         int c = 0;
-//        if (v != 0 && (400/v)!=0) {
-////        c = (int)(90*(length)*(30/(400/v))*(t/3600));//default weight = 90
-        c = (int) (length + t);//not true
-//        }
+        if (v != 0 && (400/v)!=0) {
+        c = (int)(90*(length)*(30/(400/v))*(t/3600));//default weight = 90
+
+        }
         return c;
     }
     /*calories*/
