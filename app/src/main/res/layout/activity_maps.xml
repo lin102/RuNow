@@ -119,20 +119,26 @@
         android:gravity="center"
         android:layout_weight="1">
         <Button
-            android:id="@+id/button_start"
+            android:id="@+id/button_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="START"
             android:layout_below="@id/text_calories"
-            android:layout_toRightOf="@id/button_stop"
-            android:onClick="onClickStart" />
+            />
         <Button
-            android:id="@+id/button_stop"
+            android:id="@+id/button_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PAUSE"
+            android:layout_below="@id/text_calories"
+             />
+        <Button
+            android:id="@+id/button_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="STOP"
             android:layout_below="@id/text_calories"
-            android:onClick="onClickStartNewActivity" />
+             />
     </LinearLayout>
 
 

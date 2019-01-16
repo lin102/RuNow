@@ -83,8 +83,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CameraPosition mCameraPosition;
 
 
-    private Button btstart = null;
-    private Button btstop = null;
+    private Button btleft = null;
+    private Button btright = null;
+    private Button btmiddle = null;
     private TextView texttime = null;
     private TextView textlength = null;
     private TextView textpace = null;
@@ -95,10 +96,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*out put data*/
     private static int count = 0;
     private static double s = 0;
+    private static double d = 0;
     private static double sum = 0;
     private static double latitude = 0;
     private static double longitude = 0;
     private static int v = 0;
+    private static int pace = 0;
     private static int calories = 0;
 
     private boolean isPause = false;
@@ -130,23 +133,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private String startTime = null;
 
+    // initialize a set of points of interests
+    private LatLng POI_1 = new LatLng(51.0264519, 13.7262368);
+    private LatLng POI_2 = new LatLng(51.029106, 13.724735);
+    private LatLng POI_3 = new LatLng(51.029029, 13.736457);
+
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
-        btstart = (Button) findViewById(R.id.button_start);
-        btstop = (Button) findViewById(R.id.button_stop);
+        btleft = (Button) findViewById(R.id.button_left);
+        btright = (Button) findViewById(R.id.button_right);
+        btmiddle = (Button) findViewById(R.id.button_middle);
         texttime = (TextView) findViewById(R.id.data_time);
         textlength = (TextView) findViewById(R.id.data_length);
         textpace = (TextView) findViewById(R.id.data_pace);
         textcalories = (TextView) findViewById(R.id.data_calories);
 
-        btstart.setOnClickListener(listener);
-        btstop.setOnClickListener(listener);
-        btstop.setEnabled(false);
+        btleft.setOnClickListener(listener);
+        btmiddle.setOnClickListener(listener);
+        btright.setOnClickListener(listener);
 
+        btleft.setEnabled(true);
+        btright.setEnabled(false);
+        btmiddle.setEnabled(false);
        // connecting running database
         final File dbFile = this.getDatabasePath(DB_NAME);
         if (!dbFile.exists()) {
@@ -275,6 +286,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setZoomControlsEnabled(false);
         //enable positioning button
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        // disable this because after the POI marker popup this tool will be added automatically
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
     }
 
@@ -313,6 +326,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // draw the route
                 routeDrawing(location);
             }
+            // trigger POI
+            triggerPOI();
         }
     }
 
@@ -357,34 +372,97 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 previousLocation = location;
     }
 
+    // determine if user arrive the point of interest
+    private void triggerPOI() {
+        double distanceThreshold = 0.01;// unit is km
+        // the distance to the target // the unit is km
+        double distanceToPOI_1 = GetDistance(POI_1.latitude, POI_1.longitude, latitude, longitude);
+        double distanceToPOI_2 = GetDistance(POI_2.latitude, POI_2.longitude, latitude, longitude);
+        double distanceToPOI_3 = GetDistance(POI_3.latitude, POI_3.longitude, latitude, longitude);
+        //System.out.println("The distance to POI is " + distanceToPOI);
+        // 200km per degree
+        if (distanceToPOI_1 < distanceThreshold) {
+            mMap.addMarker(
+                    new MarkerOptions()
+                            //   .icon(BitmapDescriptorFactory.fromResource(R.drawable.star))
+                            .position(POI_1)
+                            .anchor(0.5f, 0.5f)
+                            .title("Alte Mensa")
+                            .snippet("---1st Target---"));
+        }
+        if (distanceToPOI_2 < distanceThreshold) {
+            mMap.addMarker(
+                    new MarkerOptions()
+                            //   .icon(BitmapDescriptorFactory.fromResource(R.drawable.star))
+                            .position(POI_2)
+                            .anchor(0.5f, 0.5f)
+                            .title("Helmholtzstraße ")
+                            .snippet("---2nd Target---"));
+        }
+        if (distanceToPOI_3 < distanceThreshold) {
+            mMap.addMarker(
+                    new MarkerOptions()
+                            //   .icon(BitmapDescriptorFactory.fromResource(R.drawable.star))
+                            .position(POI_3)
+                            .anchor(0.5f, 0.5f)
+                            .title("SLUB")
+                            .snippet("---3rd Target---"));
+        }
+    }
+
     /*chronometer*/
     private View.OnClickListener listener = new View.OnClickListener() {
         public void onClick(View v) {
-            if (v == btstart) {
+            if (v == btleft) {//start running
+
                 previousLocation = null;
                 // start drawing
                 isDraw = true;
+                isStop = !isStop;
+                btleft.setEnabled(false);
+                btright.setEnabled(true);
+                btmiddle.setEnabled(true);
                 startTimer();
-                btstart.setEnabled(false);
-                btstop.setEnabled(true);
                 textlength.setText("0.00");
                 textpace.setText("00'00''");
                 textcalories.setText("0");
 
                 //get the current time from device system and parse to String
                 startTime = Calendar.getInstance().getTime().toString();
-                System.out.println("Current time is: "+startTime);
+                System.out.println("Current time is: " + startTime);
                 //Tue Jan 15 13:12:49 GMT 2019
             }
-            if (v == btstop) {
-                //stop drawing
-                isDraw = false;
-                stopTimer();
-                btstart.setEnabled(true);
-                btstop.setEnabled(false);
 
-                //insert new record into database
+            if (v == btmiddle) {
+                btleft.setEnabled(false);
+                btright.setEnabled(true);
+                btmiddle.setEnabled(true);
+                pauseTimer();
+                if (isPause) {//pause
+                    btmiddle.setText("RESUME");
+                    //stop drawing
+                    isDraw = false;
+                }else{//resume
+                    btmiddle.setText("PAUSE");
+                    previousLocation = null;
+                    isDraw = true;
+                }
+            }
+
+            if (v == btright){//stop
+                if (isPause){
+                    btmiddle.setText("PAUSE");
+                    isPause = !isPause;
+                }
+                stopTimer();
+                sum = 0;
+                btleft.setEnabled(true);
+                btmiddle.setEnabled(false);
+                btright.setEnabled(false);
+                isDraw = false;
+                // add record to database
                 AddDataRecordtoDB(v);
+
             }
         }
     };
@@ -416,6 +494,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mTimer != null && mTimerTask != null)
             mTimer.schedule(mTimerTask, delay, period);
 
+    }
+
+    private void pauseTimer(){
+        isPause = !isPause;
     }
 
     private void stopTimer() {
@@ -527,6 +609,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /*pace*/
+    /*pace*/
     public int getPace(double length, int t) {
         int p = 0;
         p = (int) (t / length);//s/km
@@ -535,12 +618,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*pace*/
 
     /*calories*/
-    public int getCalories(double length, int t) {
+    public int getCalories(double dis, int t) {
         int c = 0;
-//        if (v != 0 && (400/v)!=0) {
-////        c = (int)(90*(length)*(30/(400/v))*(t/3600));//default weight = 90
-        c = (int) (length + t);//not true
-//        }
+        c = (int)((dis + t)*0.25);
         return c;
     }
     /*calories*/
@@ -553,19 +633,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     lonList.get(i - 1),
                     latList.get(i),
                     lonList.get(i));
+
 //            Location.distanceBetween(latList.get(i-1),
 //                    lonList.get(i-1),
 //                    latList.get(i),
 //                    lonList.get(i),results);
 //            s = results[0];
-
+        }
+        for (int j=10; j < latList.size(); j=j+10 ){
+            d = GetDistance(latList.get(j - 10),
+                    lonList.get(j - 10),
+                    latList.get(j),
+                    lonList.get(j));
+            pace = getPace(d, 10);
+            textpace.setText(formatOfPace(pace));
         }
         sum = sum + s;
-        String Sum = String.format("%.2f", sum);
+        String Sum = String .format("%.2f",sum);
         textlength.setText(Sum);
-        v = getPace(sum, count);
+
+        v = getPace(sum,count);
         calories = getCalories(sum, count);
-        textpace.setText(formatOfPace(v));
         textcalories.setText(calories + "");
     }
 
