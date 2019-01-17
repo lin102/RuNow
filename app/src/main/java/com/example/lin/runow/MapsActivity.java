@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -129,6 +131,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // control the drawing status. default is not drawing
     private boolean isDraw = false;
+    //
+    private boolean showBound = false;
 
     String DB_NAME = "running_db.sqlite";
     RunningDAO runningdao;
@@ -229,11 +233,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         runningdao = database.getRunningdataDAO();
         List<Runningdata> runningdata_list = runningdao.getAllRuningdata();
         for (int i = 0; i < runningdata_list.size(); i++) {
-
-           String  oldStarttime = runningdata_list.get(i).getStarttime();
-           System.out.println("i:"+i+"oldStarttime:"+oldStarttime);
-
+            int oldId = runningdata_list.get(i).getId();
+            String  oldStarttime = runningdata_list.get(i).getStarttime();
+            double oldDistance = runningdata_list.get(i).getDistance();
+            double oldCalorie = runningdata_list.get(i).getCalorie();
+            System.out.println("Database shows here: "+"i:"+i+"oldId:"+oldId +"oldStarttime"+oldStarttime+"oldDistance"+oldDistance+"oldCalorie"+oldCalorie);
         }
+        // delete data from database by ID
+           //runningdao.deleteById(10);
     }
 
     // insert records into local database
@@ -258,7 +265,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // using "dao" to manipulate database
         runningdao.insert(NewRunningdata);
          System.out.println("I did insertion");
-
     }
 
     public void UpdataDataRecordtoDB(View view) {
@@ -291,6 +297,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // disable this because after the POI marker popup this tool will be added automatically
         mMap.getUiSettings().setMapToolbarEnabled(false);
 
+
     }
 
 
@@ -321,8 +328,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void onLocationChanged(Location location) {
         if (location != null) {
-            // zoom level 17 looks good in terms of running purpose
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17));
+
+            if(showBound == false) {
+                // zoom level 17 looks good in terms of running purpose
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17));
+            }
             // drawing the route while the user is running
             if (isDraw == true) {
                 // draw the route
@@ -354,6 +364,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // current coordinates
                 //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
 
+        // Polyline Options differ from
         PolylineOptions lineOptions = new PolylineOptions();
         // set the option of each part of polyline
         // 0.03 is the location update interval also the drawing interval
@@ -443,6 +454,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 previousLocation = null;
                 // start drawing
                 isDraw = true;
+                // camera is now showing bounds of points
+                showBound = false;
 
                 // clear the running route  array list if it is not empty
                 if(runningRoute.isEmpty() == false) {
@@ -499,10 +512,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 isDraw = false;
                 // add record to database
                 AddDataRecordtoDB(v);
-
+                showBound = true;
+                showBounds();
+                // clear points arraylist
+                points.clear();
             }
         }
     };
+
+    // get the bound of all the points
+    private void showBounds(){
+
+        LatLngBounds.Builder boundBuilder = new LatLngBounds.Builder();
+
+
+        for (int i = 0; i < points.size(); i++) {
+            LatLng b_position = new LatLng(points.get(i).getLatitude(),points.get(i).getLongitude());
+            boundBuilder.include(b_position);
+        }
+
+        LatLngBounds bounds = boundBuilder.build();
+
+        int deviceWidth = getResources().getDisplayMetrics().widthPixels;
+        int deviceHeight = getResources().getDisplayMetrics().heightPixels;
+        int devicePadding = (int) (deviceHeight * 0.20); // offset from edges of the map 10% of screen
+
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, deviceWidth, deviceHeight, devicePadding);
+        mMap.animateCamera(cu);
+
+    }
+
 
     private void startTimer() {
         if (mTimer == null) {
@@ -631,8 +670,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /*time format changing*/
 
-    /*test for distance's calculating*/
-
+    /*distance's calculating*/
+   // We are not using google built in method to get the distacne between 2 points
+    // This is a method we learned from Land surveying class, it works pretty good and
+    // it is a very good chance for us to implement it in our project
     public static double GetDistance(double lat1, double lon1, double lat2, double lon2) {
         double radLat1 = rad(lat1);
         double radLat2 = rad(lat2);

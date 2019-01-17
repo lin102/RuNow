@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="400">
+        android:layout_weight="400"
+        android:orientation="vertical">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -23,8 +23,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="3">
+        android:layout_weight="3"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/data_length"
             android:layout_width="match_parent"
@@ -33,7 +34,8 @@
             android:gravity="center"
             android:text="0.00"
             android:textColor="@color/data"
-            android:textSize="50dp"/>
+            android:textSize="50dp" />
+
         <TextView
             android:id="@+id/text_length"
             android:layout_width="match_parent"
@@ -42,14 +44,15 @@
             android:gravity="center_horizontal"
             android:text="KM"
             android:textColor="@color/text"
-            android:textSize="30dp"/>
+            android:textSize="30dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_weight="2">
+        android:layout_weight="2"
+        android:orientation="horizontal">
+
         <TextView
             android:id="@+id/data_pace"
             android:layout_width="match_parent"
@@ -58,7 +61,8 @@
             android:gravity="center"
             android:text="00'00''"
             android:textColor="@color/data"
-            android:textSize="30dp"/>
+            android:textSize="30dp" />
+
         <TextView
             android:id="@+id/data_time"
             android:layout_width="match_parent"
@@ -67,7 +71,8 @@
             android:gravity="center"
             android:text="00:00:00"
             android:textColor="@color/data"
-            android:textSize="30dp"/>
+            android:textSize="30dp" />
+
         <TextView
             android:id="@+id/data_calories"
             android:layout_width="match_parent"
@@ -76,14 +81,15 @@
             android:gravity="center"
             android:text="0"
             android:textColor="@color/data"
-            android:textSize="30dp"/>
+            android:textSize="30dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_weight="2">
+        android:layout_weight="2"
+        android:orientation="horizontal">
+
         <TextView
             android:id="@+id/text_pace"
             android:layout_width="match_parent"
@@ -92,7 +98,8 @@
             android:gravity="center_horizontal"
             android:text="Pace"
             android:textColor="@color/text"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
+
         <TextView
             android:id="@+id/text_time"
             android:layout_width="match_parent"
@@ -101,7 +108,8 @@
             android:gravity="center_horizontal"
             android:text="Time"
             android:textColor="@color/text"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
+
         <TextView
             android:id="@+id/text_calories"
             android:layout_width="match_parent"
@@ -110,14 +118,16 @@
             android:gravity="center_horizontal"
             android:text="Calories"
             android:textColor="@color/text"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_weight="1"
         android:gravity="center"
-        android:layout_weight="1">
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/button_left"
             android:layout_width="10dp"
@@ -152,8 +162,6 @@
             android:textSize="20dp"
             android:textStyle="bold" />
     </LinearLayout>
-
-
 
 
 </LinearLayout>

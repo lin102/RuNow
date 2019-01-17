@@ -25,6 +25,10 @@ public class Runningdata {
     public double distance;
 
     //-----get and set functions------//
+    public int getId() {
+        return id;
+    }
+
     public String getStarttime() {
         return starttime;
     }
