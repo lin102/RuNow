@@ -120,25 +120,37 @@
         android:layout_weight="1">
         <Button
             android:id="@+id/button_left"
-            android:layout_width="wrap_content"
+            android:layout_width="10dp"
             android:layout_height="wrap_content"
-            android:text="START"
             android:layout_below="@id/text_calories"
-            />
+            android:layout_margin="15dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:text="START"
+            android:textColor="@color/button_text"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
         <Button
             android:id="@+id/button_middle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PAUSE"
-            android:layout_below="@id/text_calories"
-             />
+            android:layout_width="1dp"
+            android:layout_height="90dp"
+            android:layout_margin="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/logo_round" />
+
         <Button
             android:id="@+id/button_right"
-            android:layout_width="wrap_content"
+            android:layout_width="10dp"
             android:layout_height="wrap_content"
-            android:text="STOP"
             android:layout_below="@id/text_calories"
-             />
+            android:layout_margin="15dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:text="STOP"
+            android:textColor="@color/button_text"
+            android:textSize="20dp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

@@ -8,6 +8,7 @@ import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -100,6 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static double sum = 0;
     private static double latitude = 0;
     private static double longitude = 0;
+    private static double vdraw = 0;
     private static int v = 0;
     private static int pace = 0;
     private static int calories = 0;
@@ -193,7 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest = new LocationRequest();
         //set the interval for active location update to 0.3 second
         mLocationRequest.setInterval(300);
-        // the fast interval request is 0.1 second
+        // the fast interval request is 0.01 second
         mLocationRequest.setFastestInterval(100);
         // request High accuracy location based on the need of this app
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -352,13 +354,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // current coordinates
                 //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
 
-                // set the option of each part of polyline
-                PolylineOptions lineOptions = new PolylineOptions()
-                        .add(new LatLng(previousLocation.getLatitude(), previousLocation.getLongitude()))
-                        .add(new LatLng(location.getLatitude(), location.getLongitude()))
-                        // This needs to be beautified
-                        .color(R.color.colorAccent)
-                        .width(10);
+        PolylineOptions lineOptions = new PolylineOptions();
+        // set the option of each part of polyline
+        // 0.03 is the location update interval also the drawing interval
+        vdraw = (GetDistance(previousLocation.getLatitude(), previousLocation.getLongitude(), location.getLatitude(), location.getLongitude()))/0.3;
+        System.out.println("vdraw: "+vdraw);
+        if (vdraw<0.01){
+
+            lineOptions.add(new LatLng(previousLocation.getLatitude(), previousLocation.getLongitude()))
+                    .add(new LatLng(location.getLatitude(), location.getLongitude()))
+                    // This needs to be beautified
+                    .color(getResources().getColor(R.color.slow))
+                    .width(30);
+            System.out.print("I am running slow");
+        }
+        if (vdraw>=0.008 && vdraw<=0.03){
+            lineOptions.add(new LatLng(previousLocation.getLatitude(), previousLocation.getLongitude()))
+                    .add(new LatLng(location.getLatitude(), location.getLongitude()))
+                    // This needs to be beautified
+                    .color(getResources().getColor(R.color.commen))
+                    .width(30);
+            System.out.print("I am running normally");
+        }
+        if (vdraw>0.03){
+            lineOptions.add(new LatLng(previousLocation.getLatitude(), previousLocation.getLongitude()))
+                    .add(new LatLng(location.getLatitude(), location.getLongitude()))
+                    // This needs to be beautified
+                    .color(getResources().getColor(R.color.fast))
+                    .width(30);
+            System.out.print("I am running fast");
+        }
 
                 // add the polyline to the map
                 Polyline partOfRunningRoute = mMap.addPolyline(lineOptions);
@@ -418,11 +443,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 previousLocation = null;
                 // start drawing
                 isDraw = true;
+
+                // clear the running route  array list if it is not empty
+                if(runningRoute.isEmpty() == false) {
+                    // remove all the polylines from the map
+                    for (Polyline line : runningRoute) {
+                        line.remove();
+                    }
+                    runningRoute.clear();
+                }
+
                 isStop = !isStop;
                 btleft.setEnabled(false);
                 btright.setEnabled(true);
                 btmiddle.setEnabled(true);
                 startTimer();
+                btmiddle.setBackgroundResource(R.drawable.pause_button);
                 textlength.setText("0.00");
                 textpace.setText("00'00''");
                 textcalories.setText("0");
@@ -438,12 +474,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 btright.setEnabled(true);
                 btmiddle.setEnabled(true);
                 pauseTimer();
+
                 if (isPause) {//pause
-                    btmiddle.setText("RESUME");
+                    btmiddle.setBackgroundResource(R.drawable.play_button);
                     //stop drawing
                     isDraw = false;
                 }else{//resume
-                    btmiddle.setText("PAUSE");
+                    btmiddle.setBackgroundResource(R.drawable.pause_button);
                     previousLocation = null;
                     isDraw = true;
                 }
@@ -451,11 +488,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (v == btright){//stop
                 if (isPause){
-                    btmiddle.setText("PAUSE");
                     isPause = !isPause;
                 }
                 stopTimer();
                 sum = 0;
+                btmiddle.setBackgroundResource(R.drawable.logo_round);
                 btleft.setEnabled(true);
                 btmiddle.setEnabled(false);
                 btright.setEnabled(false);
