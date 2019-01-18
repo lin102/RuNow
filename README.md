@@ -1,2 +1,2 @@
 # RuNow
-a running app
+An app will help you run better, run healthier, run nicer
