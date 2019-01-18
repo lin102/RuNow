@@ -3,4 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="data">#050505</color>
+    <color name="text">#7e797b</color>
+    <color name="slow">#FF4D00</color>
+    <color name="commen">#FFFF00</color>
+    <color name="fast">#AAFF00</color>
+    <color name="button_text">#ffffff</color>
 </resources>
