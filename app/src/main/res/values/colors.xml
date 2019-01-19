@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="data">#050505</color>
+    <color name="colorPrimary">#2c823a</color>
+    <color name="colorPrimaryDark">#00540f</color>
+    <color name="colorAccent">#c5e1a5</color>  <!-- the color of the drawn polyline-->
+    <color name="data">#f98c948c</color>
     <color name="text">#7e797b</color>
+    <color name="s_light">#f8ffd7</color>
     <color name="slow">#FF4D00</color>
     <color name="commen">#FFFF00</color>
     <color name="fast">#AAFF00</color>
     <color name="button_text">#ffffff</color>
+    <color name="background_material_light">#e7e4d8</color>
+    <color name="accent_material_dark_1">#c1e6aa</color>
 </resources>
