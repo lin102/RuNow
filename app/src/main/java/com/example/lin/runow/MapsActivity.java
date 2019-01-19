@@ -468,7 +468,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 isStop = !isStop;
                 btleft.setEnabled(false);
+                btleft.setBackgroundColor(getResources().getColor(R.color.unabled));
                 btright.setEnabled(true);
+                btright.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 btmiddle.setEnabled(true);
                 startTimer();
                 btmiddle.setBackgroundResource(R.drawable.pause_button);
@@ -484,6 +486,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (v == btmiddle) {
                 btleft.setEnabled(false);
+                btleft.setBackgroundColor(getResources().getColor(R.color.unabled));
                 btright.setEnabled(true);
                 btmiddle.setEnabled(true);
                 pauseTimer();
@@ -507,8 +510,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 sum = 0;
                 btmiddle.setBackgroundResource(R.drawable.logo_round);
                 btleft.setEnabled(true);
+                btleft.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 btmiddle.setEnabled(false);
                 btright.setEnabled(false);
+                btright.setBackgroundColor(getResources().getColor(R.color.unabled));
                 isDraw = false;
                 // add record to database
                 AddDataRecordtoDB(v);
