@@ -9,4 +9,5 @@
     <color name="commen">#FFFF00</color>
     <color name="fast">#AAFF00</color>
     <color name="button_text">#ffffff</color>
+    <color name="unabled">#d1d6ce</color>
 </resources>

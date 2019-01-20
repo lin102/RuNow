@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RuNow</string>
     <string name="title_activity_maps">Runow</string>
+    <string name="history">History</string>
 </resources>

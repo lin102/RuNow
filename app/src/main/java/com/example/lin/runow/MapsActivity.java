@@ -2,6 +2,7 @@ package com.example.lin.runow;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
@@ -9,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -739,5 +741,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         calories = getCalories(sum, count);
         textcalories.setText(calories + "");
     }
-
+    public void onClickStartNewActivity(View view) {
+//        EditText editText = (EditText) findViewById(R.id.edit_text);
+//        String text = editText.getText().toString();
+        Intent intent = new Intent(this, HistoryActivity.class);
+//        intent.putExtra(getPackageName(), text);
+        startActivity(intent);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.button_history, menu);
+        return true;
+    }
 }
