@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="230dp"
             android:layout_weight="1"
-            android:text="HISTORY" />
+            android:text="HISTORY"
+            android:onClick="onClickStartNewActivity"/>
     </LinearLayout>
 
 

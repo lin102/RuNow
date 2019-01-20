@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.arch.persistence.room.Room;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -240,7 +241,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // insert records into local database
-    public void AddDataRecordtoDB() {
+    public void AddDataRecordtoDB(View view) {
 
         //get the running distance from textview
         TextView TV_distance = (TextView)findViewById(R.id.data_length);
@@ -464,7 +465,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 isStop = !isStop;
                 btleft.setEnabled(false);
+                btleft.setBackgroundColor(getResources().getColor(R.color.unabled));
                 btright.setEnabled(true);
+                btright.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 btmiddle.setEnabled(true);
                 startTimer();
                 btmiddle.setBackgroundResource(R.drawable.pause_button);
@@ -480,6 +483,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (v == btmiddle) {
                 btleft.setEnabled(false);
+                btleft.setBackgroundColor(getResources().getColor(R.color.unabled));
                 btright.setEnabled(true);
                 btmiddle.setEnabled(true);
                 pauseTimer();
@@ -497,6 +501,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (v == btright){//stop
                 stopButton();
+                AddDataRecordtoDB(v);
             }
         }
     };
@@ -509,11 +514,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sum = 0;
         btmiddle.setBackgroundResource(R.drawable.logo_round);
         btleft.setEnabled(true);
+        btleft.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         btmiddle.setEnabled(false);
         btright.setEnabled(false);
+        btright.setBackgroundColor(getResources().getColor(R.color.unabled));
         isDraw = false;
         // add record to database
-        AddDataRecordtoDB();
+
         showBound = true;
         showBounds();
         // clear points arraylist
@@ -750,5 +757,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         recreate();
     }
-
+    public void onClickStartNewActivity(View view) {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
+    }
 }
