@@ -4,16 +4,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:text="Theme" />
+        android:orientation="horizontal">
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="THEME " />
+
+        <Button
+            android:id="@+id/history_open"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="230dp"
+            android:layout_weight="1"
+            android:text="HISTORY" />
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,6 +61,7 @@
             android:text="0.00"
             android:textColor="@color/data"
             android:textSize="50dp" />
+
         <TextView
             android:id="@+id/text_length"
             android:layout_width="match_parent"
