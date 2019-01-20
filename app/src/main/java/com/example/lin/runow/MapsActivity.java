@@ -110,8 +110,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     RunningDAO runningdao;
 
     private String startTime = null;
-    private static final String PREFS_NAME = "prefs";
-    private static final String PREF_DARK_THEME = "dark_theme";
+    public static final String PREFS_NAME = "prefs";
+    public static final String PREF_DARK_THEME = "dark_theme";
 
     // initialize a set of points of interests
     private LatLng POI_1 = new LatLng(51.0264519, 13.7262368);

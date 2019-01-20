@@ -2,16 +2,16 @@ package com.example.lin.runow;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +28,12 @@ public class HistoryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = getSharedPreferences(MapsActivity.PREFS_NAME, MODE_PRIVATE);
+
+        if(preferences.getBoolean(MapsActivity.PREF_DARK_THEME, false)) {
+            setTheme(R.style.AppThemeDarkDialog);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
