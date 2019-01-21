@@ -2,15 +2,16 @@
 <resources>
     <color name="colorPrimary">#2c823a</color>
     <color name="colorPrimaryDark">#00540f</color>
-    <color name="colorAccent">#c5e1a5</color>  <!-- the color of the drawn polyline-->
-    <color name="data">#f98c948c</color>
-    <color name="text">#080808</color>
+    <color name="colorAccent">#c5e1a5</color>
+    <color name="data">#FA8C948C</color>
+    <color name="text">#5B5E5B</color>
     <color name="s_light">#f8ffd7</color>
     <color name="slow">#FF4D00</color>
     <color name="commen">#FFFF00</color>
     <color name="fast">#AAFF00</color>
     <color name="button_text">#ffffff</color>
-    <color name="background_material_light">#e7e4d8</color>
     <color name="accent_material_dark_1">#c1e6aa</color>
     <color name="unabled">#d1d6ce</color>
+    <color name="list_colorLight">#E7E3DC</color>
+    <color name="list_colorDark">#585854</color>
 </resources>
