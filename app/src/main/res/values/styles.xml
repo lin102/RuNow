@@ -24,4 +24,8 @@
     <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar" >
         <item name="colorAccent">@color/accent_material_dark_1</item>
     </style>
+
+
+    <style name="AppThemeDarkDialog" parent="Theme.AppCompat" >
+    </style>
 </resources>
