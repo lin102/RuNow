@@ -155,7 +155,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btleft.setEnabled(true);
         btright.setEnabled(false);
         btmiddle.setEnabled(false);
-       // connecting running database
+        // connecting running database
         final File dbFile = this.getDatabasePath(DB_NAME);
         if (!dbFile.exists()) {
             try {
@@ -237,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println("Database shows here: "+"i:"+i+"oldId:"+oldId +"oldStarttime"+oldStarttime+"oldDistance"+oldDistance+"oldCalorie"+oldCalorie);
         }
         // delete data from database by ID
-           //runningdao.deleteById(10);
+        //runningdao.deleteById(10);
     }
 
     // insert records into local database
@@ -261,7 +261,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // using "dao" to manipulate database
         runningdao.insert(NewRunningdata);
-         System.out.println("I did insertion");
+        System.out.println("I did insertion");
     }
 
     public void UpdataDataRecordtoDB(View view) {
@@ -343,23 +343,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // drawing the polyline while running
     private void routeDrawing(Location location) {
 
-            // validity check in case the first point does not have a previous point
-            if (previousLocation == null) {
-                // copy the current location to the previous point
-                previousLocation = location;
-            }
-            double lat = location.getLatitude();
-            double lon = location.getLongitude();
+        // validity check in case the first point does not have a previous point
+        if (previousLocation == null) {
+            // copy the current location to the previous point
+            previousLocation = location;
+        }
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
 
-            latitude = lat;
-            longitude = lon;
-            latList.add(latitude);
-            lonList.add(longitude);
+        latitude = lat;
+        longitude = lon;
+        latList.add(latitude);
+        lonList.add(longitude);
 
-                // previous coordinates
-                //System.out.println("previous Location: " + previousLocation.getLatitude() + " " + previousLocation.getLongitude());
-                // current coordinates
-                //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
+        // previous coordinates
+        //System.out.println("previous Location: " + previousLocation.getLatitude() + " " + previousLocation.getLongitude());
+        // current coordinates
+        //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
 
         // Polyline Options differ from
         PolylineOptions lineOptions = new PolylineOptions();
@@ -393,16 +393,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.print("I am running fast");
         }
 
-                // add the polyline to the map
-                Polyline partOfRunningRoute = mMap.addPolyline(lineOptions);
-                // set the zindex so that the poly line stays on top of my tile overlays
-                partOfRunningRoute.setZIndex(1000);
-                // add the poly line to the array so they can all be removed if necessary
-                runningRoute.add(partOfRunningRoute);
-                // add the latlng from this point to the array
-                points.add(location);
-                // store current location as previous location in the end
-                previousLocation = location;
+        // add the polyline to the map
+        Polyline partOfRunningRoute = mMap.addPolyline(lineOptions);
+        // set the zindex so that the poly line stays on top of my tile overlays
+        partOfRunningRoute.setZIndex(1000);
+        // add the poly line to the array so they can all be removed if necessary
+        runningRoute.add(partOfRunningRoute);
+        // add the latlng from this point to the array
+        points.add(location);
+        // store current location as previous location in the end
+        previousLocation = location;
     }
 
     // determine if user arrive the point of interest
@@ -678,7 +678,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*time format changing*/
 
     /*distance's calculating*/
-   // We are not using google built in method to get the distacne between 2 points
+    // We are not using google built in method to get the distacne between 2 points
     // This is a method we learned from Land surveying class, it works pretty good and
     // it is a very good chance for us to implement it in our project
     public static double GetDistance(double lat1, double lon1, double lat2, double lon2) {
