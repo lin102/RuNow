@@ -4,9 +4,12 @@
     <item
         android:id="@+id/action_back"
         android:title="BACK"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_clear"
         app:showAsAction="always"
-        android:title="CLEAR" />
+        android:title="CLEAR"
+        android:icon="@drawable/clear_garbage_icon24"/>
 </menu>

@@ -20,14 +20,15 @@
             android:layout_alignParentRight="true"
             android:text="THEME " />
 
-        <Button
+        <ImageButton
             android:id="@+id/history_open"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="230dp"
             android:layout_weight="1"
-            android:text="HISTORY"
-            android:onClick="onClickStartNewActivity"/>
+            android:onClick="onClickStartNewActivity"
+            android:src="@drawable/history_icon32"
+            android:background="@android:color/transparent"/>
     </LinearLayout>
 
 
