@@ -9,7 +9,7 @@
     <!-- 主体背景颜色值 -->
     <item android:bottom="1dp"> <!--设置只有底部有边框-->
         <shape>
-            <solid android:color="#ffffff" />
+            <solid android:color="@color/list_colorLight" />
         </shape>
     </item>
 </layer-list>
