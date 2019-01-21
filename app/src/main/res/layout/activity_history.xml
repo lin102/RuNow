@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
-            android:textColor="@color/data"
+            android:textColor="@color/text"
             android:text="      ID      "
             android:textAlignment="center"
             android:background="@drawable/sideline"/>
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" distance "
-            android:textColor="@color/data"
+            android:textColor="@color/text"
             android:textSize="14dp"
             android:textAlignment="center"
             android:background="@drawable/sideline"/>
@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
-            android:textColor="@color/data"
+            android:textColor="@color/text"
             android:text=" calories "
             android:textAlignment="center"
             android:background="@drawable/sideline"/>
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
-            android:textColor="@color/data"
+            android:textColor="@color/text"
             android:text="Start Time"
             android:textAlignment="center"
             android:layout_weight="1"/>

@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00540f</color>
     <color name="colorAccent">#c5e1a5</color>  <!-- the color of the drawn polyline-->
     <color name="data">#f98c948c</color>
-    <color name="text">#7e797b</color>
+    <color name="text">#080808</color>
     <color name="s_light">#f8ffd7</color>
     <color name="slow">#FF4D00</color>
     <color name="commen">#FFFF00</color>

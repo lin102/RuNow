@@ -3,6 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" >
     <item
         android:id="@+id/action_back"
+        android:title="BACK"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_clear"
         app:showAsAction="always"
-        android:title="BACK"/>
+        android:title="CLEAR" />
 </menu>
