@@ -264,15 +264,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         System.out.println("I did insertion");
     }
 
-    public void UpdataDataRecordtoDB(View view) {
-
-    }
-
-    public void DelteDataRecordtoDB(View view) {
-
-    }
-
-
 
     @SuppressLint("NewApi")
     @Override
@@ -501,6 +492,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (v == btright){//stop
                 stopButton();
+
+
                 AddDataRecordtoDB(v);
             }
         }
