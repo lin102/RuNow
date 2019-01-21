@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lin.runow">
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -10,15 +11,14 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/logo_round"
+        android:icon="@mipmap/logo_square"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/logo_square"
+        android:roundIcon="@mipmap/logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".HistoryActivity"></activity>
-        <activity android:name=".SplashActivity">
 
-        </activity><!-- For handling lower level APIs -->
+        <!-- For handling lower level APIs -->
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -28,14 +28,21 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
+            android:name=".SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/NoTitleFullscreen"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>
