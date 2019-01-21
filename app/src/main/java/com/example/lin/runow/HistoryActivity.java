@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +26,7 @@ public class HistoryActivity extends AppCompatActivity {
     String DB_NAME = "running_db.sqlite";
     RunningDAO runningdao;
     LinearLayout data_layout;
+    ScrollView data_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,6 @@ public class HistoryActivity extends AppCompatActivity {
             data_calories.setText(oldCalorie + " ");
             data_starttime.setText(oldStarttime);
 
-
             data_layout.addView(ViewToAdd);
 
         }
@@ -98,6 +99,10 @@ public class HistoryActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, MapsActivity.class);
                 startActivity(intent);
                 break;
+
+            case R.id.action_clear:
+                    data_list = findViewById(R.id.data_list);
+                    data_list.removeAllViewsInLayout();
         }
         return super.onOptionsItemSelected(item);
     }
