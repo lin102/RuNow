@@ -2,41 +2,22 @@ package com.example.lin.runow;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.arch.persistence.room.Room;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,38 +25,29 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.RoundCap;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.Places;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import android.arch.persistence.room.Room;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Calendar;
-
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -138,6 +110,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     RunningDAO runningdao;
 
     private String startTime = null;
+    public static final String PREFS_NAME = "prefs";
+    public static final String PREF_DARK_THEME = "dark_theme";
 
     // initialize a set of points of interests
     private LatLng POI_1 = new LatLng(51.0264519, 13.7262368);
@@ -147,8 +121,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //use the chosen theme
+        boolean useDarkTheme = isDarkThemeEnabled();
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppThemeDark);
+        }
+        //
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+         //switch
+        Switch toggle = findViewById(R.id.switch1);
+        toggle.setChecked(useDarkTheme);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+                toggleTheme(isChecked);
+            }
+        });
+
         btleft = (Button) findViewById(R.id.button_left);
         btright = (Button) findViewById(R.id.button_right);
         btmiddle = (Button) findViewById(R.id.button_middle);
@@ -164,7 +155,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btleft.setEnabled(true);
         btright.setEnabled(false);
         btmiddle.setEnabled(false);
-       // connecting running database
+        // connecting running database
         final File dbFile = this.getDatabasePath(DB_NAME);
         if (!dbFile.exists()) {
             try {
@@ -213,6 +204,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
+    private boolean isDarkThemeEnabled() {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        return preferences.getBoolean(PREF_DARK_THEME, false);
+    }
+
     // copy the database file into local from APK
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(DB_NAME);
@@ -240,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.println("Database shows here: "+"i:"+i+"oldId:"+oldId +"oldStarttime"+oldStarttime+"oldDistance"+oldDistance+"oldCalorie"+oldCalorie);
         }
         // delete data from database by ID
-           //runningdao.deleteById(10);
+        //runningdao.deleteById(10);
     }
 
     // insert records into local database
@@ -264,17 +261,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // using "dao" to manipulate database
         runningdao.insert(NewRunningdata);
-         System.out.println("I did insertion");
+        System.out.println("I did insertion");
     }
-
-    public void UpdataDataRecordtoDB(View view) {
-
-    }
-
-    public void DelteDataRecordtoDB(View view) {
-
-    }
-
 
 
     @SuppressLint("NewApi")
@@ -287,8 +275,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             mMap.setMyLocationEnabled(true);
         }
-        //the map style here should be changed later with 2 customized styles
-        // one for day and one for night
+
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,
+                isDarkThemeEnabled() ? R.raw.map_night_style : R.raw.map_day_style));
+
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         // disenable zoom button because the zoom level is fixed.
         mMap.getUiSettings().setZoomControlsEnabled(false);
@@ -296,8 +286,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         // disable this because after the POI marker popup this tool will be added automatically
         mMap.getUiSettings().setMapToolbarEnabled(false);
-
-
     }
 
 
@@ -329,12 +317,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(Location location) {
         if (location != null) {
 
-            if(showBound == false) {
+            if(!showBound) {
                 // zoom level 17 looks good in terms of running purpose
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17));
             }
             // drawing the route while the user is running
-            if (isDraw == true) {
+            if (isDraw) {
                 // draw the route
                 routeDrawing(location);
             }
@@ -346,23 +334,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // drawing the polyline while running
     private void routeDrawing(Location location) {
 
-            // validity check in case the first point does not have a previous point
-            if (previousLocation == null) {
-                // copy the current location to the previous point
-                previousLocation = location;
-            }
-            double lat = location.getLatitude();
-            double lon = location.getLongitude();
+        // validity check in case the first point does not have a previous point
+        if (previousLocation == null) {
+            // copy the current location to the previous point
+            previousLocation = location;
+        }
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
 
-            latitude = lat;
-            longitude = lon;
-            latList.add(latitude);
-            lonList.add(longitude);
+        latitude = lat;
+        longitude = lon;
+        latList.add(latitude);
+        lonList.add(longitude);
 
-                // previous coordinates
-                //System.out.println("previous Location: " + previousLocation.getLatitude() + " " + previousLocation.getLongitude());
-                // current coordinates
-                //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
+        // previous coordinates
+        //System.out.println("previous Location: " + previousLocation.getLatitude() + " " + previousLocation.getLongitude());
+        // current coordinates
+        //System.out.println("Current Location: " + location.getLatitude() + " " + location.getLongitude());
 
         // Polyline Options differ from
         PolylineOptions lineOptions = new PolylineOptions();
@@ -396,16 +384,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             System.out.print("I am running fast");
         }
 
-                // add the polyline to the map
-                Polyline partOfRunningRoute = mMap.addPolyline(lineOptions);
-                // set the zindex so that the poly line stays on top of my tile overlays
-                partOfRunningRoute.setZIndex(1000);
-                // add the poly line to the array so they can all be removed if necessary
-                runningRoute.add(partOfRunningRoute);
-                // add the latlng from this point to the array
-                points.add(location);
-                // store current location as previous location in the end
-                previousLocation = location;
+        // add the polyline to the map
+        Polyline partOfRunningRoute = mMap.addPolyline(lineOptions);
+        // set the zindex so that the poly line stays on top of my tile overlays
+        partOfRunningRoute.setZIndex(1000);
+        // add the poly line to the array so they can all be removed if necessary
+        runningRoute.add(partOfRunningRoute);
+        // add the latlng from this point to the array
+        points.add(location);
+        // store current location as previous location in the end
+        previousLocation = location;
     }
 
     // determine if user arrive the point of interest
@@ -458,7 +446,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showBound = false;
 
                 // clear the running route  array list if it is not empty
-                if(runningRoute.isEmpty() == false) {
+                if(!runningRoute.isEmpty()) {
                     // remove all the polylines from the map
                     for (Polyline line : runningRoute) {
                         line.remove();
@@ -468,7 +456,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 isStop = !isStop;
                 btleft.setEnabled(false);
+                btleft.setBackgroundColor(getResources().getColor(R.color.unabled));
                 btright.setEnabled(true);
+                btright.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 btmiddle.setEnabled(true);
                 startTimer();
                 btmiddle.setBackgroundResource(R.drawable.pause_button);
@@ -484,6 +474,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (v == btmiddle) {
                 btleft.setEnabled(false);
+                btleft.setBackgroundColor(getResources().getColor(R.color.unabled));
                 btright.setEnabled(true);
                 btmiddle.setEnabled(true);
                 pauseTimer();
@@ -500,25 +491,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             if (v == btright){//stop
-                if (isPause){
-                    isPause = !isPause;
-                }
-                stopTimer();
-                sum = 0;
-                btmiddle.setBackgroundResource(R.drawable.logo_round);
-                btleft.setEnabled(true);
-                btmiddle.setEnabled(false);
-                btright.setEnabled(false);
-                isDraw = false;
-                // add record to database
+                stopButton();
+
+
                 AddDataRecordtoDB(v);
-                showBound = true;
-                showBounds();
-                // clear points arraylist
-                points.clear();
             }
         }
     };
+
+    private void stopButton() {
+        if (isPause){
+            isPause = !isPause;
+        }
+        stopTimer();
+        sum = 0;
+        btmiddle.setBackgroundResource(R.drawable.logo_round);
+        btleft.setEnabled(true);
+        btleft.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btmiddle.setEnabled(false);
+        btright.setEnabled(false);
+        btright.setBackgroundColor(getResources().getColor(R.color.unabled));
+        isDraw = false;
+        // add record to database
+
+        showBound = true;
+        showBounds();
+        // clear points arraylist
+        points.clear();
+    }
 
     // get the bound of all the points
     private void showBounds(){
@@ -567,7 +567,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             };
         }
 
-        if (mTimer != null && mTimerTask != null)
+        if (mTimer != null)
             mTimer.schedule(mTimerTask, delay, period);
 
     }
@@ -671,7 +671,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /*time format changing*/
 
     /*distance's calculating*/
-   // We are not using google built in method to get the distacne between 2 points
+    // We are not using google built in method to get the distacne between 2 points
     // This is a method we learned from Land surveying class, it works pretty good and
     // it is a very good chance for us to implement it in our project
     public static double GetDistance(double lat1, double lon1, double lat2, double lon2) {
@@ -735,4 +735,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         textcalories.setText(calories + "");
     }
 
+    private void toggleTheme(boolean darkTheme) {
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean(PREF_DARK_THEME, darkTheme);
+        editor.apply();
+
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this,
+                darkTheme ? R.raw.map_night_style : R.raw.map_day_style));
+
+        // since we need to recreate the activity when switching a theme, at least make sure to stop
+        // the timer and store data, .... if we are running
+        if (btright.isEnabled()) {
+            stopButton();
+        }
+        recreate();
+    }
+    public void onClickStartNewActivity(View view) {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
+    }
 }

@@ -7,11 +7,39 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="THEME " />
+
+        <ImageButton
+            android:id="@+id/history_open"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="230dp"
+            android:layout_weight="1"
+            android:onClick="onClickStartNewActivity"
+            android:src="@drawable/history_icon32"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="400"
         android:orientation="vertical">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:map="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -143,7 +171,7 @@
 
         <Button
             android:id="@+id/button_middle"
-            android:layout_width="1dp"
+            android:layout_width="0dp"
             android:layout_height="90dp"
             android:layout_margin="15dp"
             android:layout_weight="1"
